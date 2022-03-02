@@ -1,24 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import Home from './components/Home'
 
 function App() {
+  const [data, fetchData] = useState([]);
+  const [hasError, setErrors] = useState(false);
+
+  async function getData() {
+    const res = await fetch('http://localhost:3001/posts?limit=10');
+    res
+      .json()
+      .then(res => fetchData(res))
+      .catch(err => setErrors(err));
+  }
+
+  useEffect(() => {
+    getData()
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {hasError === false ? (
+          <Home content={data} />
+        ) : (
+          'Error!'
+        )}
     </div>
   );
 }
